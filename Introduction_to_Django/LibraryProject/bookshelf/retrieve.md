@@ -1,4 +1,4 @@
-from myapp.models import Book
+from bookshelf.models import Book
 
 # Retrieving the book instance
 
