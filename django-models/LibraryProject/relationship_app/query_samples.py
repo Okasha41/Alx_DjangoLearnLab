@@ -12,4 +12,4 @@ def query_books_in_library(library_name):
 
 
 def query_librarian_for_library(library):
-    librarian = Librarian.objects.filter(library=library)
+    librarian = Librarian.objects.get(library=library)
