@@ -1,13 +1,16 @@
-from .models import Book, Library, Librarian
+from .models import Book, Library, Librarian, Author
 
 
-def get_all_books_by_author(id):
-    queryset = Book.objects.filter(author_id=id)
+def get_all_books_by_author(author_name):
+    author = Author.objects.get(name=author_name)
+    books = author.books.all()
 
 
-def list_all_books_in_library():
-    queryset = Library.objects.prefetch_related(Book).all()
+def query_books_in_library(library_name):
+    library = Library.objects.get(name=library_name)
+    books = library.books.all()
 
 
-def get_librarian(id):
-    queryset = Librarian.objects.filter(library_id=id)
+def query_librarian_for_library(library_name):
+    library = Library.objects.get(name=library_name)
+    librarian = library.librarian
