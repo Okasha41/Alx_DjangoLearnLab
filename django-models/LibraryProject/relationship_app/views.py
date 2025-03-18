@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect
 from django.views.generic.detail import DetailView
+from django.views.generic import FormView, TemplateView
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout, authenticate
 from .models import Book
 from .models import Library
+from django.urls import reverse_lazy
 
 
 def list_books(request):
@@ -47,3 +50,29 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return render(request, 'logout.html')
+
+
+class LoginView(LoginView):
+    template_name = 'login.html'
+    authentication_form = AuthenticationForm
+    redirect_authenticated_user = True
+    success_url = reverse_lazy('home')
+
+    def get_success_url(self):
+        return self.success_url
+
+
+class LogoutView(LogoutView):
+    template_name = 'logout.html'
+    next_page = reverse_lazy('home')
+
+
+class RegisterView(FormView):
+    template_name = 'register.html'
+    form_class = UserCreationForm
+    success_url = reverse_lazy('home')
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return super().form_valid(form)
