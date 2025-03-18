@@ -8,7 +8,7 @@ from .models import Book
 from .models import Library
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 
 
 def list_books(request):
@@ -81,27 +81,30 @@ class register(FormView):
 
 
 def is_admin(user: User):
-    return user.is_authenticated and user.profile.role == 'Admin'
+    return user.profile.role == 'Admin'
 
 
 def is_librarian(user: User):
-    return user.is_authenticated and user.profile.role == 'Librarian'
+    return user.profile.role == 'Librarian'
 
 
 def is_member(user: User):
-    return user.is_authenticated and user.profile.role == 'Member'
+    return user.profile.role == 'Member'
 
 
+@login_required
 @user_passes_test(is_admin)
 def Admin(request):
     return render(request, 'admin_view.html', {'title': 'Admin Dashboard'})
 
 
+@login_required
 @user_passes_test(is_librarian)
 def librarian_view(request):
     return render(request, 'librarian_view.html', {'title': 'Librarian Dashboard'})
 
 
+@login_required
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'member_view.html', {'title': 'Member Dashboard'})
