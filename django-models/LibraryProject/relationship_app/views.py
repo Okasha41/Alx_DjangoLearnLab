@@ -93,7 +93,7 @@ def is_member(user: User):
 
 
 @user_passes_test(is_admin)
-def admin_view(request):
+def Admin(request):
     return render(request, 'admin_view.html', {'title': 'Admin Dashboard'})
 
 
