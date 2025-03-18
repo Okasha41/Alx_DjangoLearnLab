@@ -94,7 +94,7 @@ def is_member(user: User):
 
 @login_required
 @user_passes_test(is_admin)
-def Admin(request):
+def admin_view(request):
     return render(request, 'admin_view.html', {'title': 'Admin Dashboard'})
 
 
