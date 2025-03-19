@@ -4,8 +4,7 @@ from django.views.generic import FormView, TemplateView
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth import login, logout, authenticate
-from .models import Book
-from .models import Library
+from .models import Book, Library, UserProfile
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test, login_required
@@ -81,15 +80,15 @@ class register(FormView):
 
 
 def is_admin(user):
-    return user.profile.role == 'Admin'
+    return user.profile.role == UserProfile.Admin
 
 
 def is_librarian(user):
-    return user.profile.role == 'Librarian'
+    return user.profile.role == UserProfile.Librarian
 
 
 def is_member(user):
-    return user.profile.role == 'Member'
+    return user.profile.role == UserProfile.Member
 
 
 @login_required
