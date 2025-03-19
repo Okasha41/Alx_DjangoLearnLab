@@ -80,15 +80,15 @@ class register(FormView):
         return super().form_valid(form)
 
 
-def is_admin(user: User):
+def is_admin(user):
     return user.profile.role == 'Admin'
 
 
-def is_librarian(user: User):
+def is_librarian(user):
     return user.profile.role == 'Librarian'
 
 
-def is_member(user: User):
+def is_member(user):
     return user.profile.role == 'Member'
 
 
