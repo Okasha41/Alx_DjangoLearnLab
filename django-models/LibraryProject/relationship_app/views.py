@@ -7,8 +7,9 @@ from django.contrib.auth import login, logout, authenticate
 from .models import Book, Library, UserProfile
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
+from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
 
 
 def list_books(request):
@@ -110,7 +111,7 @@ def member_view(request):
     return render(request, 'relationship_app/member_view.html', {'title': 'Member Dashboard'})
 
 
-@permission_required('relationship_app.can_create_book', raise_exception=True)
+@permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
