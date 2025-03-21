@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
-from api.models import Book, Author
-from api.serializers import BookSerializer
+from .models import Book, Author
+from .serializers import BookSerializer
 
 
 class BookAPITestCase(APITestCase):
@@ -147,6 +147,7 @@ class BookAPITestCase(APITestCase):
     def test_partial_update_book(self):
         """Test partially updating an existing book"""
         self.client.force_authenticate(user=self.regular_user)
+        self.client.login()
         partial_data = {'title': 'Partially Updated Book'}
         response = self.client.patch(
             self.detail_url, partial_data, format='json')
@@ -160,7 +161,7 @@ class BookAPITestCase(APITestCase):
         self.client.force_authenticate(user=self.regular_user)
         response = self.client.delete(self.detail_url)
 
-        # Assuming only admin users can delete books
+        # Assuming only admin users can delete bookssss
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(Book.objects.count(), 3)
 
