@@ -12,6 +12,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from django.urls import reverse_lazy
 
+from django.contrib.auth.decorators import login_required
+
 from .forms import LoginForm, CreateUserForm, PostForm
 
 from .models import Post
