@@ -15,8 +15,10 @@ urlpatterns = [
     path('post/<int:pk>/delete/', views.DeleteView.as_view(), name='delete-view'),
     path('posts/<int:post_id>/comments',
          views.ListComments.as_view(), name='comment-list'),
-    path('posts/<int:post_id>/comments/new',
+    path('post/<int:pk>/comments/new/',
          views.CreateComment.as_view(), name='comment-create'),
-    path('posts/<int:post_id>/comments/<int:id>',
-         views.UpdateComment.as_view(), name='comment-update')
+    path('comment/<int:pk>/update/',
+         views.UpdateComment.as_view(), name='comment-update'),
+    path('comment/<int:pk>/delete/',
+         views.CommentDeleteView.as_view(), name='comment-delete')
 ]
