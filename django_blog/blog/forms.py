@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
 from django.forms.widgets import TextInput, PasswordInput
+from taggit.forms import TagWidget
 from .models import Post, Comment
 
 
@@ -37,10 +38,7 @@ class PostForm(forms.ModelForm):
                 'placeholder': 'Write your post here',
                 'rows': 5
             }),
-            'tags': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Type the required tag',
-            })
+            'tags': TagWidget(),
         }
 
     def __init__(self, *args, **kwargs):
