@@ -79,7 +79,7 @@ class ListView(ListView):
         if title:
             queryset = queryset.filter(title__icontains=title)
         if tags:
-            queryset = queryset.filter(tags_name__icontains=tags)
+            queryset = queryset.filter(tags__name__icontains=tags)
         if content:
             queryset = queryset.filter(content__icontains=content)
 
