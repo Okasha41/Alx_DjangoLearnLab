@@ -69,6 +69,22 @@ class ListView(ListView):
     ordering = ['-published_date']
     paginate_by = 5
 
+    def get_queryset(self):
+        queryset = Post.objects.filter().all()
+
+        title = self.request.GET.get('title')
+        tags = self.request.GET.get('tags')
+        content = self.request.GET.get('content')
+
+        if title:
+            queryset = queryset.filter(title__icontains=title)
+        if tags:
+            queryset = queryset.filter(tags_name__icontains=tags)
+        if content:
+            queryset = queryset.filter(content__icontains=content)
+
+        return queryset
+
 
 class DetailView(DetailView):
     model = Post
