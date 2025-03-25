@@ -118,7 +118,7 @@ class DeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == post.author
 
 
-class CreateComment(LoginRequiredMixin, CreateView):
+class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_create.html'
@@ -134,7 +134,7 @@ class CreateComment(LoginRequiredMixin, CreateView):
         return reverse_lazy('comment-view', kwargs={'pk': self.object.pk})
 
 
-class UpdateComment(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = 'blog/comment_update.html'
@@ -166,7 +166,7 @@ class ListComments(ListView):
         return Comment.objects.filter(post_id=self.kwargs['post_id'])
 
 
-class DeleteComment(DeleteView, LoginRequiredMixin, UserPassesTestMixin):
+class CommentDeleteView(DeleteView, LoginRequiredMixin, UserPassesTestMixin):
     model = Comment
     success_url = reverse_lazy('comments-list')
 
