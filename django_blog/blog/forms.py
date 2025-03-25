@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django import forms
 from django.forms.widgets import TextInput, PasswordInput
-from .models import Post
+from .models import Post, Comment
 
 
 # - Create/Register a user (Model Form)
@@ -67,3 +67,36 @@ class PostForm(forms.ModelForm):
             raise forms.ValidationError(
                 'Content must be at least 10 characters long')
         return content
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Write your comment here',
+                'rows': 5,
+            })
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.post = kwargs.pop('post', None)
+        self.user = kwargs.pop('user', None)
+        self.comment = kwargs.pop('comment', None)
+        return super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if not self.comment:
+            instance.post = self.post
+            instance.author = self.user
+        if commit:
+            instance.save()
+        return instance
+
+    def clean_content(self):
+        content = self.cleaned_data.get('content')
+        if len(content) < 1:
+            raise forms.ValidationError('Your comment can not be empty')

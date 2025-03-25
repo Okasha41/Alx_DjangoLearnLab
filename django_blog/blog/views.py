@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from django.http import HttpResponse
 
@@ -14,9 +14,9 @@ from django.urls import reverse_lazy
 
 from django.contrib.auth.decorators import login_required
 
-from .forms import LoginForm, CreateUserForm, PostForm
+from .forms import LoginForm, CreateUserForm, PostForm, CommentForm
 
-from .models import Post
+from .models import Post, Comment
 
 
 def home(request):
@@ -116,3 +116,60 @@ class DeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         post = self.get_object()
         return self.request.user == post.author
+
+
+class CreateComment(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_create.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        kwargs['post'] = post
+        kwargs['user'] = self.request.user
+        return super().get_form_kwargs()
+
+    def get_success_url(self):
+        return reverse_lazy('comment-view', kwargs={'pk': self.object.pk})
+
+
+class UpdateComment(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_update.html'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        post = get_object_or_404(Post, pk=self.kwargs['post_pk'])
+        comment = self.get_object()
+        kwargs['comment'] = comment
+        kwargs['post'] = post
+        kwargs['user'] = self.request.user
+        return super().get_form_kwargs()
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def get_success_url(self):
+        return reverse_lazy('comment-view', kwargs={'pk': self.kwargs['post_pk']})
+
+
+class ListComments(ListView):
+    model = Comment
+    template_name = 'blog/comment-list.html'
+    ordering = ['-updated_at']
+    context_object_name = 'comments'
+
+    def get_queryset(self):
+        return Comment.objects.filter(post_id=self.kwargs['post_id'])
+
+
+class DeleteComment(DeleteView, LoginRequiredMixin, UserPassesTestMixin):
+    model = Comment
+    success_url = reverse_lazy('comments-list')
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
