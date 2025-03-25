@@ -25,7 +25,7 @@ class LoginForm(AuthenticationForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content']
+        fields = ['title', 'content', 'tags']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -36,6 +36,10 @@ class PostForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Write your post here',
                 'rows': 5
+            }),
+            'tags': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Type the required tag',
             })
         }
 
