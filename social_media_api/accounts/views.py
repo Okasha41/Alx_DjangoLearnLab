@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
 from .models import CustomeUserModel
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer
@@ -11,15 +11,20 @@ from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserPr
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomeUserModel.objects.all()
 
+    def get_permissions(self):
+        if self.action == 'profile':
+            # Explicitly allow authenticated users for profile
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
     def get_serializer_class(self):
         if self.action == 'register':
             return UserRegistrationSerializer
-
         elif self.action == 'login':
             return UserLoginSerializer
-
-        else:
+        elif self.action == 'profile':
             return UserProfileSerializer
+        return UserProfileSerializer
 
     @action(detail=False, methods=['POST'])
     def register(self, request):
@@ -47,8 +52,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET', 'PATCH'], permission_classes=[IsAuthenticated])
     def profile(self, request):
+        print("Profile method called")
+        print(f"Request user: {request.user}")
+        print(f"Is authenticated: {request.user.is_authenticated}")
         if request.method == 'GET':
-            serializer = UserProfileSerializer(request.data)
+            serializer = UserProfileSerializer(request.user)
             return Response(serializer.data)
         serializer = UserProfileSerializer(
             request.user, data=request.data, partial=True
