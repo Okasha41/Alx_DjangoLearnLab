@@ -38,11 +38,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         # Optional bio
         if 'bio' in validated_data:
             user_data['bio'] = validated_data['bio']
+
         user = CustomeUserModel.objects.create_user(**validated_data)
+        # get_user_model().objects.create_user(**validated_data)
         return user
 
     def get_token(self, obj):
-        token, created = Token.objects.get_or_create(user=obj)
+        token = Token.objects.create(user=obj)
         return token.key
 
 
