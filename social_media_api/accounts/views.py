@@ -8,11 +8,11 @@ from rest_framework.authtoken.models import Token
 from .models import CustomeUserModel
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer
 
-CustomeUser = CustomeUserModel
+CustomUser = CustomeUserModel
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = CustomeUser.objects.all()
+    queryset = CustomUser.objects.all()
 
     def get_permissions(self):
         if self.action == 'profile':
