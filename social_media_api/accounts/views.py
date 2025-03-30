@@ -8,9 +8,11 @@ from rest_framework.authtoken.models import Token
 from .models import CustomeUserModel
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer
 
+CustomeUser = CustomeUserModel
+
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = CustomeUserModel.objects.all()
+    queryset = CustomeUser.objects.all()
 
     def get_permissions(self):
         if self.action == 'profile':
@@ -65,7 +67,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class FollowView(generics.GenericAPIView):
-    queryset = CustomeUserModel.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
@@ -82,7 +83,6 @@ class FollowView(generics.GenericAPIView):
 
 
 class UnFollowView(generics.GenericAPIView):
-    queryset = CustomeUserModel.objects.all()
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
