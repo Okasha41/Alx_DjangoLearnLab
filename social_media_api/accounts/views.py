@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -52,9 +53,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET', 'PATCH'], permission_classes=[IsAuthenticated])
     def profile(self, request):
-        print("Profile method called")
-        print(f"Request user: {request.user}")
-        print(f"Is authenticated: {request.user.is_authenticated}")
         if request.method == 'GET':
             serializer = UserProfileSerializer(request.user)
             return Response(serializer.data)
@@ -64,3 +62,35 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class FollowView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        user = request.user
+        user_to_follow = get_object_or_404(CustomeUserModel, id=user_id)
+
+        if user == user_to_follow:
+            return Response({'message': 'You can not follow yourself'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.follow(user_to_follow)
+        user.save()
+
+        return Response({'message': 'You follow the user successfully'}, status=status.HTTP_200_OK)
+
+
+class UnFollowView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        user = request.user
+        user_to_unfollow = get_object_or_404(CustomeUserModel, id=user_id)
+
+        if user == user_to_unfollow:
+            return Response({'message': 'You can not unfollow yourself'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.unfollow(user_to_unfollow)
+        user.save()
+
+        return Response({'message': 'You unfollow the user successfully'}, status=status.HTTP_200_OK)
