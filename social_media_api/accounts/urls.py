@@ -9,7 +9,7 @@ router.register('users', UserViewSet, basename='user')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('user/follow/<int:user_id>', FollowView.as_view(), name='follow-user'),
-    path('user/unfollow/<int:user_id>',
+    path('user/follow/<int:user_id>/', FollowView.as_view(), name='follow-user'),
+    path('user/unfollow/<int:user_id>/',
          UnFollowView.as_view(), name='unfollow-user'),
 ]
