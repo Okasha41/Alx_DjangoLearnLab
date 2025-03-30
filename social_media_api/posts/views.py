@@ -21,7 +21,7 @@ class PostViewSet(viewsets.ModelViewSet):
         user = request.user
         following_users = user.following.all()
         posts = Post.objects.filter(
-            author__in=following_users).order_by('-created_at')
+            author__in=following_users).order_by
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
 
