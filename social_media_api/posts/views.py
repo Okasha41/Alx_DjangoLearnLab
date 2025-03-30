@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, serializers
+from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
 from .permissions import IsOwnerOrReadOnly
@@ -15,11 +16,12 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticatedOrReadOnly])
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def feed(self, request):
         user = request.user
-        followed_users = user.following.all()
-        posts = Post.objects.filter(author__in=followed_users)
+        following_users = user.following.all()
+        posts = Post.objects.filter(
+            author__in=following_users).order_by('-created_at')
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
 
