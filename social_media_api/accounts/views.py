@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
-from rest_framework.views import APIView
+from rest_framework import generics, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -64,8 +64,9 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class FollowView(APIView):
-    permission_classes = [IsAuthenticated]
+class FollowView(generics.GenericAPIView):
+    queryset = CustomeUserModel.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         user = request.user
@@ -80,8 +81,9 @@ class FollowView(APIView):
         return Response({'message': 'You follow the user successfully'}, status=status.HTTP_200_OK)
 
 
-class UnFollowView(APIView):
-    permission_classes = [IsAuthenticated]
+class UnFollowView(generics.GenericAPIView):
+    queryset = CustomeUserModel.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         user = request.user
