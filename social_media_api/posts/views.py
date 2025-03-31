@@ -1,10 +1,11 @@
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, serializers
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from .permissions import IsOwnerOrReadOnly
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 
 
@@ -24,6 +25,15 @@ class PostViewSet(viewsets.ModelViewSet):
             author__in=following_users).order_by('-created_at')
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def like(self, request, post_id):
+        user = request.user
+        post = Post.objects.get(id=post_id)
+        like = Like.objects.create(user=user, post=post)
+        like.save()
+
+        return Response({'message': 'You liked this post'}, status=status.HTTP_201_CREATED)
 
 # Post.objects.filter(author__in=following_users).order_by
 

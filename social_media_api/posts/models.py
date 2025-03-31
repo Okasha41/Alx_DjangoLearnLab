@@ -35,3 +35,10 @@ class Comment(models.Model):
     class Meta:
         ordering = ['-created_at']
         verbose_name_plural = 'Comments'
+
+
+class Like(models.Model):
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(
+        UserModel, on_delete=models.CASCADE, related_name='likes')
