@@ -9,7 +9,9 @@ CustomUser = get_user_model()
 class Notification(models.Model):
     NOTIFIACTION_VERBS = [
         ('like', 'Like'),
-        ('comment', 'Comment')
+        ('comment', 'Comment'),
+        ('follow', 'Follow'),
+        ('unfollow', 'Unfollow'),
     ]
     recipient = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name='notifications')

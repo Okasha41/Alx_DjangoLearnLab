@@ -26,16 +26,27 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def like(self, request, post_id):
         user = request.user
-        post = Post.objects.get(id=post_id)
+        post = get_object_or_404(Post, id=post_id)
+        if Like.objects.get(user=user, post=post):
+            raise serializers.ValidationError('You already liked this post')
         like = Like.objects.create(user=user, post=post)
         like.save()
 
         return Response({'message': 'You liked this post'}, status=status.HTTP_201_CREATED)
 
-# Post.objects.filter(author__in=following_users).order_by
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def unlike(self, request, post_id):
+        user = request.user
+        post = get_object_or_404(Post, id=post_id)
+        if not Like.objects.get(user=user, post=post):
+            raise serializers.ValidationError('You did not like this post')
+        like = Like.objects.delete(user=user, post=post)
+        like.save()
+
+        return Response({'message': 'You did not this post'})
 
 
 class CommentViewSet(viewsets.ModelViewSet):
