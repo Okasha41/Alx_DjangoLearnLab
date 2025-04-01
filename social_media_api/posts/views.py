@@ -1,3 +1,9 @@
+from .models import Like, Comment
+from accounts.models import CustomeUserModel
+from notifications.models import Notification
+from django.contrib.contenttypes.models import ContentType
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, serializers
 from rest_framework import permissions, status
@@ -43,7 +49,7 @@ class PostViewSet(viewsets.ModelViewSet):
         post = get_object_or_404(Post, id=post_id)
         if not Like.objects.get(user=user, post=post):
             raise serializers.ValidationError('You did not like this post')
-        like = Like.objects.delete(user=user, post=post)
+        like = Like.objects.get_or_create(user=request.user, post=post)
         like.save()
 
         return Response({'message': 'You did not this post'})
@@ -75,3 +81,29 @@ class CommentViewSet(viewsets.ModelViewSet):
 
         # Save the comment with the author and post
         serializer.save(author=self.request.user, post=post)
+
+
+@receiver(post_save, sender=Comment)
+def create_comment_notifiaction(sender, instance, created, **kwargs):
+    if created:
+        Notification.objects.create(
+            recipient=instance.post.author,
+            actor=instance.user,
+            verb='comment',
+            target_content_type=ContentType.objects.get_for_model(
+                instance.post),
+            target_object_id=instance.post.id
+        )
+
+
+@receiver(post_save, sender=Like)
+def create_like_notification(sender, instance, created, **kwargs):
+    if created:
+        Notification.objects.create(
+            recipient=instance.post.author,
+            actor=instance.user,
+            verb='like',
+            target_content_type=ContentType.objects.get_for_model(
+                instance.post),
+            target_object_id=instance.post.id
+        )
