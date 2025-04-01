@@ -107,3 +107,5 @@ def create_like_notification(sender, instance, created, **kwargs):
                 instance.post),
             target_object_id=instance.post.id
         )
+
+# generics.get_object_or_404(Post, pk=pk)
